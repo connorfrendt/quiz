@@ -27,7 +27,9 @@
 
       <b-button
         @click="next"
-        variant="success">
+        variant="success"
+        :disabled="hasSubmitted === false"
+        >
         Next
       </b-button>
     </b-jumbotron>
@@ -43,7 +45,8 @@ export default {
       selectedIndex: null,
       correctIndex: null,
       shuffledAnswers: [],
-      answered: false
+      answered: false,
+      hasSubmitted: false
     }
   },
   props: {
@@ -64,6 +67,7 @@ export default {
       handler() { // Runs "currentQuestion" every time after the first time
         this.selectedIndex = null;
         this.answered = false;
+        this.hasSubmitted = false;
         this.shuffleAnswers();
       }
     }
@@ -80,11 +84,11 @@ export default {
     submitAnswer() {
       let isCorrect = false;
       if(this.selectedIndex === this.correctIndex) {
-        console.log('here?');
         isCorrect = true;
       }
       this.answered = true;
       this.increment(isCorrect);
+      this.hasSubmitted = true;
     },
     answeredClass(index) {
       let answered = this.answered;
@@ -118,6 +122,9 @@ export default {
   }
 
   .correct {
+    background-color: green;
+  }
+  #correct:hover {
     background-color: green;
   }
 
