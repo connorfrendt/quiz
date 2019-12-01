@@ -54,8 +54,10 @@ export default {
     },
     increment(isCorrect) {
       if(isCorrect) {
+        console.log('CORRECT');
         this.numCorrect++
       }
+      console.log('AFTER');
       this.numTotal++;
     }
   }

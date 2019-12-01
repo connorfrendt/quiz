@@ -8,10 +8,10 @@
       
       <b-list-group>
         <b-list-group-item
-          v-for="(answer, index) in answers"
+          v-for="(answer, index) in shuffledAnswers"
           :key="index"
           @click.prevent="selectAnswer(index)"
-          :class="[selectedIndex === index ? 'selected' : '']"
+          :class="answeredClass(index)"
           >
           {{ answer }}
         </b-list-group-item>
@@ -20,9 +20,11 @@
       <b-button
         variant="primary"
         @click="submitAnswer"
+        :disabled="selectedIndex === null || answered"
         >
         Submit
       </b-button>
+
       <b-button
         @click="next"
         variant="success">
@@ -39,7 +41,9 @@ export default {
   data() {
     return {
       selectedIndex: null,
+      correctIndex: null,
       shuffledAnswers: [],
+      answered: false
     }
   },
   props: {
@@ -59,6 +63,7 @@ export default {
       immediate: true, // Runs the first time "currentQuestion" gets passed as props
       handler() { // Runs "currentQuestion" every time after the first time
         this.selectedIndex = null;
+        this.answered = false;
         this.shuffleAnswers();
       }
     }
@@ -70,13 +75,26 @@ export default {
     shuffleAnswers() {
       let answers = [...this.currentQuestion.incorrect_answers, this.currentQuestion.correct_answer];
       this.shuffledAnswers = _.shuffle(answers);
+      this.correctIndex = this.shuffledAnswers.indexOf(this.currentQuestion.correct_answer);
     },
     submitAnswer() {
       let isCorrect = false;
       if(this.selectedIndex === this.correctIndex) {
+        console.log('here?');
         isCorrect = true;
       }
+      this.answered = true;
       this.increment(isCorrect);
+    },
+    answeredClass(index) {
+      let answered = this.answered;
+      let selectedIndex = this.selectedIndex;
+      let correctIndex = this.correctIndex;
+
+      return !answered && selectedIndex === index ? 'selected'
+            : answered && correctIndex === index ? 'correct'
+            : answered && selectedIndex === index && correctIndex !== index ? 'incorrect'
+            : '';
     }
   }
 }
